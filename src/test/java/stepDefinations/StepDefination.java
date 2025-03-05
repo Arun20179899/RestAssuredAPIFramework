@@ -9,6 +9,8 @@ import io.restassured.specification.RequestSpecification;
 import resources.TestBuildData;
 import resources.Utils;
 
+import java.io.FileNotFoundException;
+
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
 
@@ -18,7 +20,7 @@ public class StepDefination extends Utils {
     TestBuildData data = new TestBuildData();
 
     @Given("Add Place Payload")
-    public void add_place_payload() {
+    public void add_place_payload() throws FileNotFoundException {
         // Write code here that turns the phrase above into concrete actions
         addPlaceReq = given().spec(requestSpecification()).body(data.addPlacePayload());
     }
@@ -26,7 +28,8 @@ public class StepDefination extends Utils {
     @When("user calls {string} with Post http request")
     public void user_calls_with_post_http_request(String string) {
         // Write code here that turns the phrase above into concrete actions
-        response = addPlaceReq.when().post("/maps/api/place/add/json").then().extract().response();
+
+        response = addPlaceReq.when().post("/maps/api/place/add/json").then().spec(responseSpecification()).extract().response();
     }
 
     @Then("the API call got success with status code {int}")
