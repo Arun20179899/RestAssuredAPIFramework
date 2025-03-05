@@ -3,27 +3,44 @@ package stepDefinations;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+import resources.TestBuildData;
+import resources.Utils;
 
-public class StepDefination {
+import static io.restassured.RestAssured.given;
+import static org.junit.Assert.assertEquals;
+
+public class StepDefination extends Utils {
+    RequestSpecification addPlaceReq;
+    Response response;
+    TestBuildData data = new TestBuildData();
+
     @Given("Add Place Payload")
     public void add_place_payload() {
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        addPlaceReq = given().spec(requestSpecification()).body(data.addPlacePayload());
     }
+
     @When("user calls {string} with Post http request")
     public void user_calls_with_post_http_request(String string) {
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        response = addPlaceReq.when().post("/maps/api/place/add/json").then().extract().response();
     }
+
     @Then("the API call got success with status code {int}")
-    public void the_api_call_got_success_with_status_code(Integer int1) {
+    public void the_api_call_got_success_with_status_code(Integer statusCode) {
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+        assertEquals(response.getStatusCode(), 200);
     }
+
     @Then("{string} in response body is {string}")
-    public void in_response_body_is(String string, String string2) {
+    public void in_response_body_is(String keyValue, String expectedValue) {
         // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
-        // Added this line to verify changes are replicated in Intelij or not after updating the project
+        String res = response.asString();
+        JsonPath js = new JsonPath(res);
+        assertEquals(js.get(keyValue).toString(), expectedValue);
+
     }
 }
