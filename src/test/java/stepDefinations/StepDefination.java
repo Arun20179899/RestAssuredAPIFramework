@@ -10,6 +10,7 @@ import resources.TestBuildData;
 import resources.Utils;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
@@ -19,10 +20,10 @@ public class StepDefination extends Utils {
     Response response;
     TestBuildData data = new TestBuildData();
 
-    @Given("Add Place Payload")
-    public void add_place_payload() throws FileNotFoundException {
+    @Given("Add Place Payload with {string} {string} {string}")
+    public void add_place_payload_with(String name, String language, String address) throws IOException {
         // Write code here that turns the phrase above into concrete actions
-        addPlaceReq = given().spec(requestSpecification()).body(data.addPlacePayload());
+        addPlaceReq = given().spec(requestSpecification()).body(data.addPlacePayload(name, language, address));
     }
 
     @When("user calls {string} with Post http request")

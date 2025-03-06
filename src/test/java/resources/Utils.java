@@ -8,27 +8,38 @@ import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
+import java.io.*;
+import java.util.Properties;
 
 public class Utils {
-    RequestSpecification req;
+    public static RequestSpecification req;
     ResponseSpecification res;
 
 
-    public RequestSpecification requestSpecification() throws FileNotFoundException {
+    public RequestSpecification requestSpecification() throws IOException {
         //    Implement Logging Feature to read the Request and Response data
-        PrintStream log = new PrintStream(new FileOutputStream("logging.txt"));
-        req = new RequestSpecBuilder().setBaseUri("https://rahulshettyacademy.com")
-                .setContentType(ContentType.JSON).addQueryParam("key", "qaclick123")
-                .addFilter(RequestLoggingFilter.logRequestTo(log))
-                .addFilter(ResponseLoggingFilter.logResponseTo(log)).build();
+        if (req == null) {
+            PrintStream log = new PrintStream(new FileOutputStream("logging.txt"));
+            req = new RequestSpecBuilder().setBaseUri(getGlobalValue("baseUrl"))
+                    .setContentType(ContentType.JSON).addQueryParam("key", "qaclick123")
+                    .addFilter(RequestLoggingFilter.logRequestTo(log))
+                    .addFilter(ResponseLoggingFilter.logResponseTo(log)).build();
+            return req;
+        }
         return req;
     }
 
     public ResponseSpecification responseSpecification() {
         res = new ResponseSpecBuilder().expectStatusCode(200).expectContentType(ContentType.JSON).build();
         return res;
+    }
+
+    public static String getGlobalValue(String key) throws IOException {
+        Properties prop = new Properties();
+        FileInputStream fip = new FileInputStream("C:\\Users\\lenovo\\IdeaProjects\\RestAssuredAPIFramework\\src\\test\\java\\resources\\global.properties");
+        // we have load the file to prop object
+        prop.load(fip);
+        // get the value
+        return prop.getProperty(key);
     }
 }
